@@ -13,3 +13,7 @@ install:
 
 # 运行测试
 script: pytest
+
+os:
+  - osx
+  - windows
