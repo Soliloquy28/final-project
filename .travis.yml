@@ -1,4 +1,4 @@
-language: python
+language: shell
 python:
   - "3.6"
   - "3.7"
