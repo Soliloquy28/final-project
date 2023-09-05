@@ -120,10 +120,10 @@ class TrackingSelectionPage(tk.Frame):
                 cv.imshow("Source Video", frame)
                 p_list.append([x, y])
                 if len(p_list) == 4:
-                    pts1 = sort_points(p_list)
-                    pts1 = np.float32(pts1)
+                    self.pts1 = sort_points(p_list)
+                    self.pts1 = np.float32(self.pts1)
                     pts2 = np.float32([[0, 0], [0, dst_point[1]], [dst_point[0], dst_point[1]], [dst_point[0], 0]])
-                    dst = cv.warpPerspective(frame_copy, cv.getPerspectiveTransform(pts1, pts2), dst_point)
+                    dst = cv.warpPerspective(frame_copy, cv.getPerspectiveTransform(self.pts1, pts2), dst_point)
                     cv.namedWindow("Perspective", cv.WINDOW_AUTOSIZE)
                     rate = Global.screen_height/dst.shape[0]
                     rsdst=cv.resize(dst,(int(dst.shape[1]*rate),int(dst.shape[0]*rate)))
@@ -189,9 +189,9 @@ class TrackingSelectionPage(tk.Frame):
                 if success:
                     frame = cv.resize(frame, None, fx=scale_ratio, fy=scale_ratio)
                     # transform frame
-                    pts1 = np.float32(p_list)
+                    # pts1 = sort_points(p_list)
                     pts2 = np.float32([[0, 0], [0, dst_point[1]], [dst_point[0], dst_point[1]], [dst_point[0], 0]])
-                    dst = cv.warpPerspective(frame, cv.getPerspectiveTransform(pts1, pts2), dst_point)
+                    dst = cv.warpPerspective(frame, cv.getPerspectiveTransform(self.pts1, pts2), dst_point)
 
                     # 先进行去噪
                     dst = cv.GaussianBlur(dst, (3, 3), 0)

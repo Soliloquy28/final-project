@@ -219,10 +219,6 @@ class MetricsSelectionPage(tk.Frame):
             csem_threshold_sequence = self.threshold_sequence
 
 
-
-
-            # def create_descending_list(n):
-            #     return list(range(n, 0, -1))
             def group_max(lst, group_size):
                 max_vals = []
                 for i in range(0, len(lst) - group_size + 1):
