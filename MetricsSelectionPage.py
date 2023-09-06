@@ -370,7 +370,6 @@ class MetricsSelectionPage(tk.Frame):
                 self.metrics_canvas_2.yview_moveto(0)
             self.master.after(100, move_scrollbar_to_top)
 
-
         else:
             messagebox.showwarning("Warning", "Please process the video first")
 

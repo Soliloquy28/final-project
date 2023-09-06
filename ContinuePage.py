@@ -1,11 +1,9 @@
 from __future__ import print_function
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox
 import os
 import json
-
-
 
 
 # Continue Page frame class
@@ -24,7 +22,6 @@ class ContinuePage(tk.Frame):
         self.back_button.place(relx=0.05, rely=0.05, anchor='nw')
 
         self.master.protocol("WM_DELETE_WINDOW", self.quit)
-
 
 
     # Bind on_select to ComboboxSelected event
@@ -50,7 +47,6 @@ class ContinuePage(tk.Frame):
     def update_available(self):
         if self.master.continue_username not in self.master.continue_author_list:
             self.continue_dropdown.set('')
-        # self.continue_dropdown['values'] = self.master.continue_author_list
         directory_path = os.path.abspath(os.getcwd())
         if "Repository" not in os.listdir(directory_path):
             os.makedirs(f'{directory_path}/Repository')

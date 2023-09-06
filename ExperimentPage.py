@@ -1,7 +1,7 @@
 from __future__ import print_function
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox
 import os
 import shutil
 import json
@@ -12,14 +12,15 @@ class ExperimentPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        # 初始化排序列和方向
+        # Initialize sorting column and direction
         self.sort_column = None
         self.sort_direction = False
 
         self.continue_project_label = tk.Label(self, text="")
         self.continue_project_label.place(relx=0.5, rely=0.15, anchor='center')
 
-        self.tree_frame = tk.Frame(self)  # Create a frame for the Treeview and Scrollbar
+        # Create a frame for the Treeview and Scrollbar
+        self.tree_frame = tk.Frame(self)
         self.tree_frame.place(relx=0.5, rely=0.5, anchor='center')
 
         self.tree = ttk.Treeview(self.tree_frame, columns=("c1", "c2", "c3", "c4"), show='headings', selectmode="extended", height=14)
@@ -52,7 +53,7 @@ class ExperimentPage(tk.Frame):
 
     def delete_selected_experiment(self):
         selected_item = self.tree.selection()
-        # 如果一个都没有选却直接点击删除的话
+        # If none is selected and directly clicked delete
         if len(selected_item) > 0:
             choice = messagebox.askyesno("Confirmation", "Are you sure you want to delete the selected experiment(s)?")
             if choice:
@@ -93,7 +94,7 @@ class ExperimentPage(tk.Frame):
             self.update_sort()
 
     def sortby(self, col, descending):
-        # 保存点击的列的数据
+        # Save the data of the clicked column
         data = []
         is_num = True
         for child in self.tree.get_children(''):
@@ -111,31 +112,32 @@ class ExperimentPage(tk.Frame):
                 return s
 
         if col == 'c1':
-            # Experiment特殊处理
+            # Special handling for Experiment
             data = sorted(data, key=to_experiment, reverse=descending)
         elif is_num:
-            # 如果是纯数字特殊处理
+            # Special handling if it's purely numeric
             data = sorted(data, key=lambda x: (float(x[0]), x[1]), reverse=descending)
         else:
-            # 无视大小写排序
+            # Ignore alphabet case for sorting
             data = sorted(data, key=lambda x: (x[0].lower(), x[1]), reverse=descending)
-        # 更新排序好的数据
+        # Update the sorted data
         for indx, item in enumerate(data):
             self.tree.move(item[1], '', indx)
         self.tree.heading(col, command=lambda _col=col: self.sortby(col, int(not descending)))
-        # 保存排序列和方向, 方便下次插入新数据时, 按照原先的排序进行展示
+        # Save sorting column and direction for future use,
+        # allowing the original sorting to be displayed when inserting new data
         self.sort_column = col
         self.sort_direction = descending
 
     def update_sort(self):
-        # 如果未进行排序, 则默认按照时间排序
+        # If no sorting has been performed, default to sorting by time
         if not self.sort_column:
             self.sort_column = 'c3'
             self.sort_direction = True
-        # 如果已经设置了排序，重新应用当前的排序
+        # If sorting is already set, reapply the current sorting
         self.sortby(self.sort_column, self.sort_direction)
 
-    # 用抛出来测试字符串里是不是纯数字
+    # Test if the string contains only digits
     def is_num(self, ss):
         try:
             float(ss)
@@ -144,7 +146,7 @@ class ExperimentPage(tk.Frame):
             return False
 
     def update_username_and_list(self):
-        # 先移除所有按钮
+        # Remove all buttons first
         self.delete_all_btn.place_forget()
         self.delete_experiment_btn.place_forget()
         self.continue_button.place_forget()

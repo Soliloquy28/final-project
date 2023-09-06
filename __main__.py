@@ -15,15 +15,15 @@ screen_height = img.size[1]
 # Windows: [1920, 1080]
 # Macbook: [3024, 1964] [1512, 982]
 
-# 透视变换图尺寸 (pixel) [ 轨道宽度，轨道长度 ]
+# Perspective transformation image size (pixels) [Track width, Track length]
 blob_size = [450, 1500]
-# 真实尺寸 (cm) [ 轨道宽度，轨道长度 ]
+# Actual size (cm) [Track width, Track length]
 blob_real_size = [42, 140] # 3.3333333333333333
-# 边界拓展尺寸 (pixel) [ 边界总宽度，边界总高度 ]
+# Boundary expansion size (pixels) [Total boundary width, Total boundary height]
 blob_border_size = [300, 100]
-# 真实宽度比率
+# Actual width ratio
 blob_width_ratio = blob_size[0] / blob_real_size[0]
-# 真实高度比率
+# Actual height ratio
 blob_height_ratio = blob_size[1] / blob_real_size[1]
 
 
