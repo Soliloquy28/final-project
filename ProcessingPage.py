@@ -20,7 +20,6 @@ from RailDetector import *
 import Global
 
 
-
 # Processing Page frame class
 class ProcessingPage(tk.Frame):
     def __init__(self, master):
