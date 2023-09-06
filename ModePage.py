@@ -12,10 +12,10 @@ class ModePage(tk.Frame):
         self.welcome_label = tk.Label(self, text="")
         self.welcome_label.place(relx=0.5, rely=0.2, anchor='center')
 
-        self.new_button = tk.Button(self, text="Start A New Project", command=self.go_to_upload_page, cursor="hand2")
+        self.new_button = tk.Button(self, text="Start a New Project", command=self.go_to_upload_page, cursor="hand2")
         self.new_button.place(relx=0.5, rely=0.4, anchor='center')
 
-        self.continue_button = tk.Button(self, text="Continue A Project", command=self.go_to_continue_page, cursor="hand2")
+        self.continue_button = tk.Button(self, text="Continue a Project", command=self.go_to_continue_page, cursor="hand2")
         self.continue_button.place(relx=0.5, rely=0.6, anchor='center')
 
         self.back_button = tk.Button(self, text="Back", command=self.back_to_login_page, cursor="hand2")

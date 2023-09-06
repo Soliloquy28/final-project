@@ -169,7 +169,7 @@ class ProcessingPage(tk.Frame):
             def on_closing():
                 if self.cap.isOpened():
                     self.cap.release()
-                self.master.thread_running=False
+                self.master.thread_running = False
                 self.review_toplevel.destroy()
             self.review_toplevel.protocol("WM_DELETE_WINDOW", on_closing)
             # 在左侧Frame中创建一个内嵌的Frame来装视频的Label和Scale
