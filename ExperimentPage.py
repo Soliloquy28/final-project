@@ -22,7 +22,6 @@ class ExperimentPage(tk.Frame):
         # Create a frame for the Treeview and Scrollbar
         self.tree_frame = tk.Frame(self)
         self.tree_frame.place(relx=0.5, rely=0.5, anchor='center')
-
         self.tree = ttk.Treeview(self.tree_frame, columns=("c1", "c2", "c3", "c4"), show='headings', selectmode="extended", height=14)
         self.tree.column("c1", anchor=tk.CENTER, width=100)
         self.tree.heading("c1", text="Experiment", command=lambda _col="c1": self.sortby(_col, 0))
