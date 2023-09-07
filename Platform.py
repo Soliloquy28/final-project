@@ -23,11 +23,8 @@ class Platform(tk.Tk):
         self.processed_video_path_dynamic = ""
         self.basement_name_dynamic = ""
         self.continue_author_list = []
-        # self.scale_length = None
-        # self.scale_length_1 = None
         self.proximity_threshold = tk.StringVar()
         self.csem_threshold = tk.StringVar()
-        # self.csem_m = tk.StringVar()
         self.total_frame = tk.StringVar()
         self.frame_enter_value = tk.StringVar()
         self.thread_running = True
