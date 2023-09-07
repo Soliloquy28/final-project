@@ -1069,7 +1069,7 @@ class MetricsSelectionPage(tk.Frame):
             self.canvas_di_2.mpl_connect('motion_notify_event', self.move_cursor_di_2)
 
             self.di_T_dis_theta_label_frame = tk.Frame(self.di_frame, width=int(frame_width * 12 / 13),
-                                               height=int(frame_height * 1 / 4))
+                                               height=int(frame_height * 1 / 7))
             self.di_T_dis_theta_label_frame.pack()
 
             # di T value
