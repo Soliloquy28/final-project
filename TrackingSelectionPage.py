@@ -18,7 +18,6 @@ class TrackingSelectionPage(tk.Frame):
         tk.Frame.__init__(self, master)
         self.back_button = tk.Button(self, text="Back", command=self.back_to_process_page, cursor="hand2")
         self.back_button.place(relx=0.05, rely=0.05, anchor='nw')
-
         self.manual_label = tk.Label(self, text="Manual Selection:")
         self.manual_label.place(relx=0.5, rely=0.25, anchor='center')
         self.manual_btn = tk.Button(self, text="Multiple Object Tracking", command=self.multiple_tracking)
@@ -53,44 +52,41 @@ class TrackingSelectionPage(tk.Frame):
         video_height = cap.get(cv.CAP_PROP_FRAME_HEIGHT)
         width_ratio = Global.screen_width / video_width
         height_ratio = Global.screen_height / video_height
-        # 选择较小的比例，这样视频就不会超出屏幕尺寸
+        # Choose a smaller scale to ensure the video does not exceed the screen size
         scale_ratio = min(width_ratio, height_ratio)
-        fps_source = cap.get(cv.CAP_PROP_FPS)
 
         # Read first frame
         success, frame = cap.read()
         # quit if unable to read the video file
         if not success:
             sys.exit(1)
-
         frame = cv.resize(frame, None, fx=scale_ratio, fy=scale_ratio)
-        height, width = frame.shape[:2]
 
-        # 先进行去噪
+        # Begin with denoising
         frame = cv.GaussianBlur(frame, (3, 3), 0)
-        # # 然后提高对比度
+        # Then increase contrast
         alpha = 1  # Contrast control (1.0-3.0)
         beta = 0  # Brightness control (0-100)
         frame = cv.convertScaleAbs(frame, alpha=alpha, beta=beta)
-        # 最后进行锐化
+        # Finally, perform sharpening
         kernel_sharpening = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
         frame = cv.filter2D(frame, -1, kernel_sharpening)
 
+        # Four marked points
         p_list = []
-        # 四个标记点
-        dst_point = Global.multiple_size  # 输出变换图像长宽
+        dst_point = Global.multiple_size  # Output the dimensions of the transformed image
         frame_copy = frame.copy()
-        # frame_copy = cv.resize(frame_copy, None, fx=scale_ratio, fy=scale_ratio)
         cv.namedWindow("Source Video", cv.WINDOW_AUTOSIZE)
         cv.imshow("Source Video", frame)
 
-        # 计算中心点: 计算四个点的均值
-        # 基于中心点对四个点排序:
-        # 与中心点相对的四个点可以通过其与中心点的角度进行排序。角度可以使用atan2函数计算。
-        # math.atan2 * 180 / pi % 360 算绝对角度
-        # 右上绝对角度最小，然后是左上，左下，右下
-        # sorted按point和中心点centroid的绝对角度从小到大排序
-        # 最后抽出来的顺序是[1, 2, 3, 0]
+        # Calculate the center point: Calculate the mean of the four points
+        # Sort the four points based on the center point:
+        # The four points relative to the center point can be sorted by their angles with respect to the center point.
+        # Angles can be calculated using the atan2 function.
+        # math.atan2 * 180 / pi % 360 calculates the absolute angle
+        # The absolute angle is smallest for the bottom-right, followed by bottom-left, top-left, and top-right
+        # Sorting with sorted based on the absolute angle between each point and the centroid
+        # The final order obtained is [2, 1, 0, 3]
         def sort_points(points):
             # Calculate centroid
             centroid_x = sum([p[0] for p in points]) / 4
@@ -129,7 +125,8 @@ class TrackingSelectionPage(tk.Frame):
                     rsdst=cv.resize(dst,(int(dst.shape[1]*rate),int(dst.shape[0]*rate)))
                     cv.imshow("Perspective", rsdst)
                     cv.destroyWindow("Source Video")
-                    selectROI_and_start_tracking(dst)  # 开始选择ROI并进行追踪
+                    # Begin selecting the ROI and tracking
+                    selectROI_and_start_tracking(dst)
             elif event == cv.EVENT_RBUTTONDOWN:
                 # right click is for removing points
                 if p_list:
@@ -189,19 +186,13 @@ class TrackingSelectionPage(tk.Frame):
                 if success:
                     frame = cv.resize(frame, None, fx=scale_ratio, fy=scale_ratio)
                     # transform frame
-                    # pts1 = sort_points(p_list)
                     pts2 = np.float32([[0, 0], [0, dst_point[1]], [dst_point[0], dst_point[1]], [dst_point[0], 0]])
                     dst = cv.warpPerspective(frame, cv.getPerspectiveTransform(self.pts1, pts2), dst_point)
 
-                    # 先进行去噪
                     dst = cv.GaussianBlur(dst, (3, 3), 0)
-
-                    # # 然后提高对比度
                     alpha = 1  # Contrast control (1.0-3.0)
                     beta = 0  # Brightness control (0-100)
                     dst = cv.convertScaleAbs(dst, alpha=alpha, beta=beta)
-
-                    # 最后进行锐化
                     kernel_sharpening = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
                     dst = cv.filter2D(dst, -1, kernel_sharpening)
 
@@ -209,15 +200,15 @@ class TrackingSelectionPage(tk.Frame):
                     distance_spot_coordinate = []
                     if success1:
                         for i, newbox in enumerate(boxes):
-                            p1 = (int(newbox[0]), int(newbox[1]))  # 左上角坐标
-                            p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))  # 右下角坐标
+                            p1 = (int(newbox[0]), int(newbox[1]))  # Top-left coordinates
+                            p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))  # Bottom-right coordinates
                             cv.rectangle(dst, p1, p2, colors[i], 2, 1)
                             dx = int(newbox[0] + newbox[2] / 2)
                             dy = int(newbox[1] + newbox[3] / 2)
                             dsc = (dx, dy)
                             distance_spot_coordinate.append(dsc)
 
-                            # 新的代码：根据索引添加到正确的列表中
+                            # New code: Add to the correct list based on the index
                             if i == 0:
                                 object1_coordinates.append(dsc)
                             elif i == 1:
@@ -245,9 +236,8 @@ class TrackingSelectionPage(tk.Frame):
                             break
                     else:
                         for i, newbox in enumerate(boxes):
-                            p1 = (int(newbox[0]), int(newbox[1]))  # 左上角坐标
+                            p1 = (int(newbox[0]), int(newbox[1]))  # Top-left coordinates
                             distance_spot_coordinate.append((0, 0))
-                            # 新的代码：根据索引添加到正确的列表中
                             if i == 0:
                                 object1_coordinates.append((0, 0))
                             elif i == 1:
@@ -259,8 +249,6 @@ class TrackingSelectionPage(tk.Frame):
                             font_scale = dst.shape[1] / 1920
                             cv.putText(dst, "Press ESC to exit", (text_x, text_y), cv.FONT_HERSHEY_SIMPLEX, font_scale,
                                        (0, 0, 255), 2)
-
-                            # cv.putText(dst, "Press ESC to exit", (200, 1200), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 2)
                         if len(bboxes) == 2:
                             dyadic_distance = 0
                             cv.putText(dst, f"Distance: {dyadic_distance}cm", (150, 60), cv.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 2)
@@ -276,12 +264,10 @@ class TrackingSelectionPage(tk.Frame):
             cap.release()
             cv.destroyAllWindows()
 
-            # 读取 JSON 文件
             with open(f'{repo_path}/{current_exp_file}/metadata.json', 'r') as file:
                 data = json.load(file)
             if any(os.scandir(processed_video_path)):
-                # 对数据进行更新
-                data['processedvideo'] = f'{processed_video_path}/{video_name}'  # 取决于你的JSON文件的结构和你需要更新的内容
+                data['processedvideo'] = f'{processed_video_path}/{video_name}'
                 data['status'] = "Processed"
                 data['distancelist'] = list(dyadic_distance_list)
                 data['object1coordinatelist'] = object1_coordinates
@@ -290,7 +276,6 @@ class TrackingSelectionPage(tk.Frame):
                 data['boxes'] = len(bboxes)
                 data['trackingmethod'] = "Multiple object tracking"
 
-                # 将更新后的数据写回文件
                 with open(f'{repo_path}/{current_exp_file}/metadata.json', 'w') as file:
                     json.dump(data, file, indent=4)
             self.master.process_status = data['status']
@@ -304,10 +289,8 @@ class TrackingSelectionPage(tk.Frame):
         else:
             choice = messagebox.askyesno("Confirmation", "The source video has been processed, do you want to process again?\nIf you do that, all your annotations and metrics records will be deleted!")
             if choice:
-                # 读取 JSON 文件
                 with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                     data = json.load(file)
-                # 对数据进行更新
                 self.master.process_status = "Unprocessed"
                 data['status'] = "Unprocessed"
                 data['totalframe'] = 0
@@ -322,24 +305,23 @@ class TrackingSelectionPage(tk.Frame):
                 data['annotation'] = []
                 data['boxes'] = 0
                 data['trackingmethod'] = ''
-                # 将更新后的数据写回文件
                 with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                     json.dump(data, file, indent=4)
-                # 删除processed video
+                # Delete the processed video
                 dir = f'{self.master.experiment_path_dynamic}/Processed_Video'
                 for files in os.listdir(dir):
                     path = os.path.join(dir, files)
                     os.remove(path)
-                # 找到Annotation文件夹下的所有Word文档，无论是 .doc 还是 .docx
+                # Find all Word documents in the Annotation folder, whether .doc or .docx
                 word_files_anno = glob.glob(os.path.join(f'{self.master.experiment_path_dynamic}/Annotation', "*.doc*"))
                 for word_file_anno in word_files_anno:
-                    # 删除指定的 Word 文档
+                    # Delete the specified Word document
                     os.remove(word_file_anno)
-                # 找到Metrics_Result文件夹下的所有Word文档，无论是 .doc 还是 .docx
+                # Find all Word documents in the Metrics_Result folder, whether .doc or .docx
                 word_files_metrics = glob.glob(
                     os.path.join(f'{self.master.experiment_path_dynamic}/Metrics_Result', "*.doc*"))
                 for word_file_metrics in word_files_metrics:
-                    # 删除指定的 Word 文档
+                    # Delete the specified Word document
                     os.remove(word_file_metrics)
                 self.multiple_tracking_process()
 
@@ -359,7 +341,6 @@ class TrackingSelectionPage(tk.Frame):
 
         # Create a video capture object to read videos
         cap = cv.VideoCapture(f'{source_video_path}/{video_name}')
-        fps_source = cap.get(cv.CAP_PROP_FPS)
 
         # Read first frame
         success, frame = cap.read()
@@ -367,13 +348,13 @@ class TrackingSelectionPage(tk.Frame):
         if not success:
             sys.exit(1)
 
-        # 加载轨道目标检测器
-        # 黄色目标物HSV条件: H>=20 and H<=60 and S>100
-        # 透视变换图尺寸: [450, 1500]
-        # 边界拓展尺寸：[300,100]
+        # Load the rail target detector
+        # Yellow target object HSV conditions: H>=20 and H<=60 and S>100
+        # Perspective transformation image size: [450, 1500]
+        # Boundary extension size: [300, 100]
         rd = RailDetector(20, 60, 100, Global.blob_size, Global.blob_border_size)
 
-        # 坚持检测两个目标
+        # Persist in detecting two targets
         bboxes, img = rd.keepDetect(f'{source_video_path}/{video_name}', 2)
 
         # Specify the tracker type
@@ -392,7 +373,7 @@ class TrackingSelectionPage(tk.Frame):
 
         # we are using mp4v codec for mp4
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
-        writer = cv.VideoWriter(f'{processed_video_path}/{video_name}', apiPreference=0, fourcc=fourcc, fps=17, frameSize=Global.blob_size)
+        writer = cv.VideoWriter(f'{processed_video_path}/{video_name}', apiPreference=0, fourcc=fourcc, fps=17, frameSize=(img.shape[1], img.shape[0]))
 
         dyadic_distance_list = []
         object1_coordinates = []
@@ -402,18 +383,11 @@ class TrackingSelectionPage(tk.Frame):
         while cap.isOpened():
             success, frame = cap.read()
             if success:
-                # 获取透视变换图
                 dst = rd.getPerspectiveImage(frame)
-
-                # 先进行去噪
                 dst = cv.GaussianBlur(dst, (3, 3), 0)
-
-                # # 然后提高对比度
                 alpha = 1  # Contrast control (1.0-3.0)
                 beta = 0  # Brightness control (0-100)
                 dst = cv.convertScaleAbs(dst, alpha=alpha, beta=beta)
-
-                # 最后进行锐化
                 kernel_sharpening = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
                 dst = cv.filter2D(dst, -1, kernel_sharpening)
 
@@ -421,15 +395,14 @@ class TrackingSelectionPage(tk.Frame):
                 distance_spot_coordinate = []
                 if success1:
                     for i, newbox in enumerate(boxes):
-                        p1 = (int(newbox[0]), int(newbox[1]))  # 左上角坐标
-                        p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))  # 右下角坐标
+                        p1 = (int(newbox[0]), int(newbox[1]))
+                        p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
                         cv.rectangle(dst, p1, p2, colors[i], 2, 1)
                         dx = int(newbox[0] + newbox[2] / 2)
                         dy = int(newbox[1] + newbox[3] / 2)
                         dsc = (dx, dy)
                         distance_spot_coordinate.append(dsc)
 
-                        # 新的代码：根据索引添加到正确的列表中
                         if i == 0:
                             object1_coordinates.append(dsc)
                         elif i == 1:
@@ -448,7 +421,7 @@ class TrackingSelectionPage(tk.Frame):
 
                     # show frame
                     rate = Global.screen_height/dst.shape[0]
-                    rsdst=cv.resize(dst,(int(dst.shape[1]*rate),int(dst.shape[0]*rate)))
+                    rsdst = cv.resize(dst,(int(dst.shape[1]*rate),int(dst.shape[0]*rate)))
                     cv.imshow('Perspective Video', rsdst)
                     writer.write(dst)
 
@@ -458,7 +431,6 @@ class TrackingSelectionPage(tk.Frame):
                 else:
                     for i, newbox in enumerate(boxes):
                         distance_spot_coordinate.append((0, 0))
-                        # 新的代码：根据索引添加到正确的列表中
                         if i == 0:
                             object1_coordinates.append((0, 0))
                         elif i == 1:
@@ -481,12 +453,10 @@ class TrackingSelectionPage(tk.Frame):
         cap.release()
         cv.destroyAllWindows()
 
-        # 读取 JSON 文件
         with open(f'{repo_path}/{current_exp_file}/metadata.json', 'r') as file:
             data = json.load(file)
         if any(os.scandir(processed_video_path)):
-            # 对数据进行更新
-            data['processedvideo'] = f'{processed_video_path}/{video_name}'  # 取决于你的JSON文件的结构和你需要更新的内容
+            data['processedvideo'] = f'{processed_video_path}/{video_name}'
             data['status'] = "Processed"
             data['distancelist'] = list(dyadic_distance_list)
             data['object1coordinatelist'] = object1_coordinates
@@ -495,7 +465,6 @@ class TrackingSelectionPage(tk.Frame):
             data['boxes'] = len(bboxes)
             data['trackingmethod'] = "Blob tracking"
 
-            # 将更新后的数据写回文件
             with open(f'{repo_path}/{current_exp_file}/metadata.json', 'w') as file:
                 json.dump(data, file, indent=4)
         self.master.process_status = data['status']
@@ -507,10 +476,8 @@ class TrackingSelectionPage(tk.Frame):
         else:
             choice = messagebox.askyesno("Confirmation", "The source video has been processed, do you want to process again?\nIf you do that, all your annotations and metrics records will be deleted!")
             if choice:
-                # 读取 JSON 文件
                 with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                     data = json.load(file)
-                # 对数据进行更新
                 self.master.process_status = "Unprocessed"
                 data['status'] = "Unprocessed"
                 data['totalframe'] = 0
@@ -525,23 +492,17 @@ class TrackingSelectionPage(tk.Frame):
                 data['annotation'] = []
                 data['boxes'] = 0
                 data['trackingmethod'] = ''
-                # 将更新后的数据写回文件
                 with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                     json.dump(data, file, indent=4)
-                # 删除processed video
                 dir = f'{self.master.experiment_path_dynamic}/Processed_Video'
                 for files in os.listdir(dir):
                     path = os.path.join(dir, files)
                     os.remove(path)
-                # 找到Annotation文件夹下的所有Word文档，无论是 .doc 还是 .docx
                 word_files_anno = glob.glob(os.path.join(f'{self.master.experiment_path_dynamic}/Annotation', "*.doc*"))
                 for word_file_anno in word_files_anno:
-                    # 删除指定的 Word 文档
                     os.remove(word_file_anno)
-                # 找到Metrics_Result文件夹下的所有Word文档，无论是 .doc 还是 .docx
                 word_files_metrics = glob.glob(
                     os.path.join(f'{self.master.experiment_path_dynamic}/Metrics_Result', "*.doc*"))
                 for word_file_metrics in word_files_metrics:
-                    # 删除指定的 Word 文档
                     os.remove(word_file_metrics)
                 self.blob_tracking_process()

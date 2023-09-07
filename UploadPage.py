@@ -56,7 +56,6 @@ class UploadPage(tk.Frame):
 
 
     def sortby(self, col, descending):
-        # 保存点击的列的数据
         data = []
         is_num = True
         for child in self.upload_tree.get_children(''):
@@ -64,6 +63,7 @@ class UploadPage(tk.Frame):
             if is_num:
                 if not self.is_num(data[-1][0]):
                     is_num = False
+
 
         def to_experiment(s):
             try:
@@ -74,37 +74,37 @@ class UploadPage(tk.Frame):
                 return s
 
         if col == 'c1':
-            # Experiment特殊处理
+            # Special handling for Experiment
             data = sorted(data, key=to_experiment, reverse=descending)
         elif is_num:
-            # 如果是纯数字特殊处理
+            # Special handling if it's pure numerical data
             data = sorted(data, key=lambda x: (float(x[0]), x[1]), reverse=descending)
         else:
-            # 无视大小写排序
+            # Sort case-insensitively
             data = sorted(data, key=lambda x: (x[0].lower(), x[1]), reverse=descending)
-        # 更新排序好的数据
+        # Update the sorted data
         for indx, item in enumerate(data):
             self.upload_tree.move(item[1], '', indx)
         self.upload_tree.heading(col, command=lambda _col=col: self.sortby(col, int(not descending)))
-        # 保存排序列和方向, 方便下次插入新数据时, 按照原先的排序进行展示
+        # Save sorting column and direction for future data insertion, to display in the original order
         self.upload_sort_column = col
         self.upload_sort_direction = descending
 
+
     def update_sort(self):
-        # 如果未进行排序, 则默认按照时间排序
         if not self.upload_sort_column:
             self.upload_sort_column = 'c3'
             self.upload_sort_direction = True
-        # 如果已经设置了排序，重新应用当前的排序
         self.sortby(self.upload_sort_column, self.upload_sort_direction)
 
-    # 用抛出来测试字符串里是不是纯数字
+
     def is_num(self, ss):
         try:
             float(ss)
             return True
         except:
             return False
+
 
     def go_to_processing_page(self):
         from ProcessingPage import ProcessingPage
@@ -115,8 +115,6 @@ class UploadPage(tk.Frame):
             self.master.basement_name_dynamic = self.upload_tree.set(selected_item, "c2")
             self.master.experiment_path_dynamic = f'{self.master.repository_path_dynamic}/{self.master.selected_new}'
             self.master.processed_video_path_dynamic = f'{self.master.experiment_path_dynamic}/Processed_Video'
-            # for row in self.upload_tree.get_children():
-            #     self.upload_tree.delete(row)
             self.master.show_frame(ProcessingPage)
             self.update_sort()
         else:
@@ -129,8 +127,6 @@ class UploadPage(tk.Frame):
             # Loop over each selected file
             for file_path in file_paths:
                 file_name = os.path.basename(file_path)
-                # self.master.basement_name_dynamic = file_name
-                # Here starts the equivalent part of UploadFileApp.openfile()
                 if file_path:
                     directory_path = os.path.abspath(os.getcwd())
                     # Create repository if not exists
@@ -188,7 +184,7 @@ class UploadPage(tk.Frame):
 
     def delete_file(self):
         selected_item = self.upload_tree.selection()
-        # 如果一个都没有选却直接点击删除的话
+        # If none are selected and deleted directly
         if len(selected_item) > 0:
             choice = messagebox.askyesno("Confirmation", "Are you sure you want to delete the uploaded file?")
             if choice:
@@ -274,6 +270,4 @@ class UploadPage(tk.Frame):
 
     def back_to_mode_page(self):
         from ModePage import ModePage
-        # for row in self.upload_tree.get_children():
-        #     self.upload_tree.delete(row)
         self.master.show_frame(ModePage)

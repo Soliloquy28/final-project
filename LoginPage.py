@@ -8,7 +8,6 @@ import Global
 class LoginPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master, width=700, height=500)
-
         photo_ucl = Global.photo_place("ucl_logo.png", 150, 60)
         self.image_label_ucl = tk.Label(self, image=photo_ucl)
         self.image_label_ucl.image = photo_ucl
@@ -22,8 +21,6 @@ class LoginPage(tk.Frame):
         # When closing the main window, the program quits automatically
         self.master.protocol("WM_DELETE_WINDOW", self.quit)
         self.pack()
-
-        print(type(self.username_entry))
 
 
     # Check for valid entered username

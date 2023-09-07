@@ -14,13 +14,10 @@ from RailDetector import *
 import Global
 
 
-
-
 # Metrics Selection Page frame class
 class MetricsSelectionPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
-
         self.back_button = tk.Button(self, text="Back", command=self.back_to_process_page, cursor="hand2")
         self.back_button.place(relx=0.05, rely=0.05, anchor='nw')
         self.proximity_label = tk.Label(self, text="Proximity Analysis:")
@@ -31,7 +28,7 @@ class MetricsSelectionPage(tk.Frame):
         self.coordination_label.place(relx=0.5, rely=0.5, anchor='center')
         self.coordination_btn = tk.Button(self, text="Correlation & DI & Cs", command=self.rv_di_cs)
         self.coordination_btn.place(relx=0.5, rely=0.6, anchor='center')
-        # 保存tree的排序数据指标
+        # Save sorting data index for the tree
         self.tree_dict = dict()
 
     def back_to_process_page(self):
@@ -64,14 +61,12 @@ class MetricsSelectionPage(tk.Frame):
                     distance = round(math.sqrt(((cor1[0] - cor2[0]) / width_ratio) ** 2 + ((cor1[1] - cor2[1]) / height_ratio) ** 2), 2)
                     all_distance_list.append(distance)
             cap = cv.VideoCapture(video_path)
-            # 检查视频是否成功打开
+            # Check if the video was successfully opened
             if not cap.isOpened():
                 exit()
-            # 获取视频的帧总数
+            # Get the total number of frames in the video
             total_frame_count = len(data["distancelist"])
             self.master.total_frame = total_frame_count
-            # total_frame_count = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
-            # self.master.total_frame = total_frame_count
             self.screen_width = get_monitors()[0].width
             self.screen_height = get_monitors()[0].height
             self.prox_csem_cs_toplevel = tk.Toplevel(self.master)
@@ -79,7 +74,7 @@ class MetricsSelectionPage(tk.Frame):
             # Set the width for each frame
             frame_width = int((self.screen_width) * 3 / 8)
             frame_height = int(self.screen_height - 200)
-            # 创建左侧frame
+            # Create the left frame
             self.frame_1 = tk.Frame(self.prox_csem_cs_toplevel, width=frame_width)
             self.frame_1.pack(side='left', fill='both', expand=True)
             self.metrics_canvas_1 = tk.Canvas(self.frame_1, width=int((self.screen_width) * 3 / 8) - 25)
@@ -90,15 +85,16 @@ class MetricsSelectionPage(tk.Frame):
             self.metrics_canvas_1.configure(yscrollcommand=self.metrics_scrollbar_1.set)
             self.metrics_scrollbar_1.pack(side=tk.RIGHT, fill=tk.Y)
             self.metrics_canvas_1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
             self.pro_label_image_frame = tk.Frame(self.canvas_1_frame, width=int(frame_width * 12 / 13), height=int(frame_height * 1 / 3))
             self.pro_label_image_frame.pack()
             self.pro_label = tk.Label(self.pro_label_image_frame, text="Proximity index (Prox)")
             self.pro_label.place(relx=0.5, rely=0.15, anchor="center")
             photo_1 = Global.photo_place("amProx.png", int(frame_width * 4.3 / 10), int(frame_width * 4.3 / 20))
             self.image_label_1 = tk.Label(self.pro_label_image_frame, image=photo_1)
-            self.image_label_1.image = photo_1  # 保持对图片的引用
-            self.image_label_1.place(relx=0.5, rely=0.35, anchor="n")  # 将图片放在self.pro_label的正下方
+            # Maintain a reference to the image
+            self.image_label_1.image = photo_1
+            # Place the image just below self.pro_label
+            self.image_label_1.place(relx=0.5, rely=0.35, anchor="n")
             self.pro_threshold_graph_frame = tk.Frame(self.canvas_1_frame, width=int(frame_width * 12 / 13), height=int(frame_height * 1 / 2))
             self.pro_threshold_graph_frame.pack()
             self.pro_distance_threshold_graph_frame = tk.Frame(self.pro_threshold_graph_frame)
@@ -106,16 +102,16 @@ class MetricsSelectionPage(tk.Frame):
             self.pro_distance_threshold_graph = Figure(figsize=(int(frame_width * 12 / 13) / 100, int(frame_height * 1 / 2) / 100), dpi=100)
             self.pro_subplot = self.pro_distance_threshold_graph.add_subplot(111)
             self.pro_distance_list = data["distancelist"]
-            # self.pro_distance_list.sort()
             start_distance = int(min(self.pro_distance_list))
             final_distance = int(max(self.pro_distance_list))
             self.total_frame = data["totalframe"]
             start_threshold = start_distance - 3
             final_threshold = final_distance + 3
-            # 数列开始于 start_threshold。
-            # 之后的每一个数都增加了 step 的大小，直到但不包括 final_threshold。
+            # The sequence starts at start_threshold
+            # Each subsequent number increases by the step
+            # size until but not including final_threshold
             step = 0.5
-            # 使用numpy.arange创建数列
+            # Create a sequence using numpy.arange
             self.threshold_sequence = np.arange(start_threshold, final_threshold, step)
             prox_value_list = []
             for thre in self.threshold_sequence:
@@ -185,10 +181,7 @@ class MetricsSelectionPage(tk.Frame):
             for prox in data["prox"]:
                 self.pro_tree.insert('', 'end', values=(prox["author"], prox["δ"], prox["prox"], prox["timestamp"]))
 
-
-
-
-            # 创建中间frame
+            # Create the middle frame
             self.frame_2 = tk.Frame(self.prox_csem_cs_toplevel, width=frame_width)
             self.frame_2.pack(side='left', fill='both', expand=True)
             self.metrics_canvas_2 = tk.Canvas(self.frame_2, width=int((self.screen_width) * 3 / 8) - 25)
@@ -208,8 +201,8 @@ class MetricsSelectionPage(tk.Frame):
             self.csem_label.place(relx=0.5, rely=0.15, anchor='center')
             photo_2 = Global.photo_place("amCSEM.png", int(frame_width * 6.3 / 10), int(frame_width * 6.3 / 20))
             self.image_label_2 = tk.Label(self.csem_label_image_frame, image=photo_2)
-            self.image_label_2.image = photo_2  # 保持对图片的引用
-            self.image_label_2.place(relx=0.5, rely=0.35, anchor='n')  # 将图片放在self.pro_label的正下方
+            self.image_label_2.image = photo_2
+            self.image_label_2.place(relx=0.5, rely=0.35, anchor='n')
             self.csem_threshold_graph_frame = tk.Frame(self.canvas_2_frame, width=int(frame_width * 12 / 13), height=int(frame_height * 1 / 2))
             self.csem_threshold_graph_frame.pack()
             self.csem_distance_list = data["distancelist"]
@@ -248,15 +241,16 @@ class MetricsSelectionPage(tk.Frame):
                     csem_value = 0
                 self.csem_x_cor.append(threshold)
                 self.csem_y_cor.append(csem_value)
-            # 如果你有很多条线，并且不想手动指定每一条线的颜色，matplotlib也会自动为你的线条分配不同的颜色。
+            # If you have many lines and don't want to manually specify
+            # the color for each one, Matplotlib will automatically assign
+            # different colors to your lines.
             self.csem_subplot.plot(self.csem_x_cor, self.csem_y_cor, color='r')
             self.csem_subplot.set_xlabel("Threshold (cm)")
             self.csem_subplot.set_ylabel("CSEM")
-
             self.csem_distance_threshold_graph.tight_layout()
             self.csem_distance_threshold_graph.subplots_adjust(top=0.9)
             self.canvas_csem = FigureCanvasTkAgg(self.csem_distance_threshold_graph,
-                                                 master=self.csem_threshold_graph_frame)  # A tk.DrawingArea.
+                                                 master=self.csem_threshold_graph_frame)
             self.canvas_csem.draw()
             self.canvas_csem.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
             self.csem_line = None
@@ -272,7 +266,6 @@ class MetricsSelectionPage(tk.Frame):
             self.csem_distance_label = tk.Label(self.csem_label_entry_frame,
                                                 text=f"The distance ranges from {min_distance}cm to {max_distance}cm.")
             self.csem_distance_label.place(relx=0.5, rely=0.4, anchor='center')
-
             # threshold entry frame
             self.csem_threshold_frame = tk.Frame(self.csem_label_entry_frame, width=frame_width * 7 / 10)
             self.csem_threshold_frame.place(relx=0.5, rely=0.6, anchor='center')
@@ -313,15 +306,15 @@ class MetricsSelectionPage(tk.Frame):
             for csem in data["csem"]:
                 self.csem_tree.insert('', 'end', values=(csem["author"], csem["δ"], csem["max(m)"], csem["CSEM"], csem["timestamp"]))
 
-            # 创建右侧frame
+            # Create the right frame
             self.frame_3 = tk.Frame(self.prox_csem_cs_toplevel, width=int(frame_width * 2 / 3))
             self.frame_3.pack(side='left', fill='both', expand=True)
             self.cs_label = tk.Label(self.frame_3, text="Coefficient of Sociality (Cs)")
             self.cs_label.place(relx=0.5, rely=0.05, anchor='center')
             photo_3 = Global.photo_place("amCs.png", int(frame_width / 2), int(frame_width / 3))
             self.image_label_3 = tk.Label(self.frame_3, image=photo_3)
-            self.image_label_3.image = photo_3  # 保持对图片的引用
-            self.image_label_3.place(relx=0.5, rely=0.1, anchor='n')  # 将图片放在self.pro_label的正下方
+            self.image_label_3.image = photo_3
+            self.image_label_3.place(relx=0.5, rely=0.1, anchor='n')
             # cs T value
             self.cs_T_label = tk.Label(self.frame_3, text=f"T = {self.master.total_frame}")
             self.cs_T_label.place(relx=0.5, rely=0.4, anchor='center')
@@ -339,35 +332,39 @@ class MetricsSelectionPage(tk.Frame):
             self.cs_cs_label.place(relx=0.5, rely=0.55, anchor='center')
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                 data = json.load(file)
-                # 对数据进行更新
+                # Update the data
                 data['cs'] = [{
                     "D_O": DO_value,
                     "D_E": DE_value,
                     "Cs": Cs_value
                 }]
-                # 将更新后的数据写回文件
+            # Write the updated data back to the file
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                 json.dump(data, file, indent=4)
-            # 写入word文档
-            # 创建Cs word文档并编辑写入Cs result
+            # Write to a Word document
+            # Create a CS Word document and edit it to write CS results
             # Add prox to metrics file as .docx
             frame_cs_docx_path = f'{self.master.experiment_path_dynamic}/Metrics_Result/Cs.docx'
-            # os.path.exists()是Python中os模块的一个方法，用于检查指定的路径（文件或目录）是否存在。
-            # 如果路径存在，它会返回True；如果路径不存在，它会返回False。
+            # os.path.exists() is a method in the os module in Python used to
+            # check if a specified path (file or directory) exists
+            # It returns True if the path exists and False if it does not
             if os.path.exists(frame_cs_docx_path):
                 doc = Document(frame_cs_docx_path)
             else:
-                doc = Document()  # 创建一个Document对象
-            # 遍历文档中的所有段落，并删除
+                # Create a Document object
+                doc = Document()
+            # Iterate through all paragraphs in the document and delete them
             for element in doc.element.body:
                 doc.element.body.remove(element)
             doc.add_paragraph(
-                f'D_O = {DO_value}\nD_E = {DE_value}\nCs = {Cs_value}')  # 在文档中添加一个段落
-            doc.save(frame_cs_docx_path)  # 将文档保存为一个.docx文件
-            # after方法会在100毫秒后调用move_scrollbar_to_top函数。
+                # Add a paragraph to the document
+                f'D_O = {DO_value}\nD_E = {DE_value}\nCs = {Cs_value}')
+            # Save the document as a .docx file
+            doc.save(frame_cs_docx_path)
             def move_scrollbar_to_top():
                 self.metrics_canvas_1.yview_moveto(0)
                 self.metrics_canvas_2.yview_moveto(0)
+            # The after method will call the move_scrollbar_to_top function after 100 milliseconds.
             self.master.after(100, move_scrollbar_to_top)
 
         else:
@@ -386,7 +383,7 @@ class MetricsSelectionPage(tk.Frame):
 
 
     def draw_line_1(self, event):
-        # 检查了鼠标点击事件是否在图像的坐标轴内
+        # Check if the mouse click event is within the coordinates of the image axis
         if event.inaxes is not None:
             x_value = event.xdata
             if self.prox_line:
@@ -394,9 +391,9 @@ class MetricsSelectionPage(tk.Frame):
             if self.prox_annotation:
                 self.prox_annotation.remove()
             self.prox_line = self.pro_subplot.axvline(x=x_value, color='g')
-            # 找到最接近点击点x坐标的y值
+            # Find the y value closest to the clicked point's x coordinate
             y_interp = np.interp(x_value, self.pro_x_cor, self.pro_y_cor)
-            # 显示坐标
+            # Display coordinates
             self.prox_annotation = self.pro_subplot.annotate(f'({x_value:.2f}, {y_interp:.2f})', xy=(x_value, y_interp), xytext=(x_value, y_interp))
             # Redraw the canvas
             self.canvas_prox.draw()
@@ -412,8 +409,8 @@ class MetricsSelectionPage(tk.Frame):
             self.csem_subplot.set_title("")
             self.canvas_csem.draw()
 
+
     def draw_line_2(self, event):
-        # 检查了鼠标点击事件是否在图像的坐标轴内
         if event.inaxes is not None:
             x_value = event.xdata
             if self.csem_line:
@@ -421,16 +418,14 @@ class MetricsSelectionPage(tk.Frame):
             if self.csem_annotation:
                 self.csem_annotation.remove()
             self.csem_line = self.csem_subplot.axvline(x=x_value, color='g')
-            # 找到最接近点击点x坐标的y值
             y_interp = np.interp(x_value, self.csem_x_cor, self.csem_y_cor)
-            # 显示坐标
             self.csem_annotation = self.csem_subplot.annotate(f'({x_value:.2f}, {y_interp:.2f})', xy=(x_value, y_interp),
                                                             xytext=(x_value, y_interp))
             # Redraw the canvas
             self.canvas_csem.draw()
 
 
-    # 用抛出来测试字符串里是不是纯数字
+    # Test if the string contains only digits
     def is_num(self, ss):
         try:
             float(ss)
@@ -440,7 +435,7 @@ class MetricsSelectionPage(tk.Frame):
 
 
     def sortby(self, col, descending, current_tree):
-        # 保存点击的列的数据
+        # Save the data of the clicked column
         data = []
         is_num = True
         for child in current_tree.get_children(''):
@@ -454,32 +449,34 @@ class MetricsSelectionPage(tk.Frame):
                 if not self.is_num(data[-1][0]):
                     is_num = False
         if is_num:
-            # 如果是纯数字特殊处理
+            # Special handling if it's purely numeric
             data = sorted(data, key=lambda x: (float(x[0]), x[1]), reverse=descending)
         else:
-            # 无视大小写排序
+            # Ignore case for sorting
             data = sorted(data, key=lambda x: (x[0].lower(), x[1]), reverse=descending)
-        # 更新排序好的数据
+        # Update the sorted data
         for indx, item in enumerate(data):
             current_tree.move(item[1], '', indx)
         current_tree.heading(col, command=lambda _col=col: self.sortby(col, int(not descending), current_tree))
-        # 保存排序列和方向, 方便下次插入新数据时, 按照原先的排序进行展示
+        # Save sorting column and direction for future use,
+        # allowing the original sorting to be displayed when inserting new data
         self.tree_dict[current_tree] = [col, descending]
 
 
     def update_sort(self, current_tree):
-        # 根据传递
         if self.tree_dict.get(current_tree, True):
             return
         sort_column = self.tree_dict[current_tree][0]
         sort_direction = self.tree_dict[current_tree][1]
-        # 如果已经设置了排序，重新应用当前的排序
+        # Apply the current sorting if it has already been set
         self.sortby(sort_column, sort_direction, current_tree)
 
 
     def delete_pro_item(self):
-        # selection()函数返回一个包含所有选定项ID的元组。
-        # 这些ID是在你创建Treeview中的每一行时赋予的，如果你在创建时没有明确指定ID，Tkinter将会自动分配一个。
+        # The selection() function returns a tuple containing all selected item IDs
+        # These IDs are assigned to each row in your Treeview when you create it,
+        # and if you haven't explicitly specified an ID during creation,
+        # Tkinter will assign one automatically.
         selected_item = self.pro_tree.selection()
         if len(selected_item) == 1:
             value_1 = self.pro_tree.item(selected_item[0], "values")
@@ -504,19 +501,13 @@ class MetricsSelectionPage(tk.Frame):
                     # Delete from word
                     doc_path_selected = f'{self.master.experiment_path_dynamic}/Metrics_Result/Proximity.docx'
                     doc = Document(doc_path_selected)
-                    # 遍历文档中的所有段落，找到并删除对应的prox
+                    # Iterate through all paragraphs in the document, find and delete the corresponding Prox
                     for para in doc.paragraphs:
                         if timestamp_selected in para.text:
-                            # 找到对应的prox，将其删除
+                            # Find the corresponding Prox and delete it
                             p = para._element
                             p.getparent().remove(p)
                     doc.save(doc_path_selected)
-                    doc = Document(doc_path_selected)
-                    # # 判断文档是否为空
-                    # is_empty = all(not elem.text for elem in doc.element.body)
-                    # # 如果文档为空，删除文档
-                    # if is_empty:
-                    #     os.remove(doc_path_selected)
                     with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                         data = json.load(file)
                     if data["prox"] == []:
@@ -553,19 +544,11 @@ class MetricsSelectionPage(tk.Frame):
                         # Delete from word
                         doc_path_selected_1 = f'{self.master.experiment_path_dynamic}/Metrics_Result/Proximity.docx'
                         doc_1 = Document(doc_path_selected_1)
-                        # 遍历文档中的所有段落，找到并删除对应的prox
                         for para in doc_1.paragraphs:
                             if timestamp_selected in para.text:
-                                # 找到对应的prox，将其删除
                                 p = para._element
                                 p.getparent().remove(p)
                         doc_1.save(doc_path_selected_1)
-                        doc_1 = Document(doc_path_selected_1)
-                        # # 判断文档是否为空
-                        # is_empty = all(not elem.text for elem in doc.element.body)
-                        # # 如果文档为空，删除文档
-                        # if is_empty:
-                        #     os.remove(doc_path_selected)
                         with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                             data = json.load(file)
                         if data["prox"] == []:
@@ -595,7 +578,7 @@ class MetricsSelectionPage(tk.Frame):
                 if dis < threshold:
                     kernel = kernel + 1
             prox_value = kernel / total_frame
-            # 在metadata.json中插入prox result
+            # Insert prox result in metadata.json
             self.pro_tree.insert('', 'end', values=(prox_author, threshold, prox_value, timestamp))
             self.update_sort(self.pro_tree)
             new_prox = {
@@ -607,18 +590,16 @@ class MetricsSelectionPage(tk.Frame):
             data['prox'].append(new_prox)
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                 json.dump(data, file, indent=4)
-            # 创建Proximity word文档并编辑写入新prox result
+            # Create a Proximity Word document and edit it to write the new prox result
             # Add prox to metrics file as .docx
             frame_prox_docx_path = f'{self.master.experiment_path_dynamic}/Metrics_Result/Proximity.docx'
-            # os.path.exists()是Python中os模块的一个方法，用于检查指定的路径（文件或目录）是否存在。
-            # 如果路径存在，它会返回True；如果路径不存在，它会返回False。
             if os.path.exists(frame_prox_docx_path):
                 doc = Document(frame_prox_docx_path)
             else:
-                doc = Document()  # 创建一个Document对象
+                doc = Document()
             doc.add_paragraph(
                 f'{timestamp}\n{prox_author}: \nδ = {threshold}\nProximity = {prox_value}\n--------------------------------------------------------------------------------------------------------------------')  # 在文档中添加一个段落
-            doc.save(frame_prox_docx_path)  # 将文档保存为一个.docx文件
+            doc.save(frame_prox_docx_path)
 
         else:
             messagebox.showwarning("Warning", "Please enter valid threshold value")
@@ -646,19 +627,11 @@ class MetricsSelectionPage(tk.Frame):
                 # Delete from word
                 doc_path_selected = f'{self.master.experiment_path_dynamic}/Metrics_Result/CSEM.docx'
                 doc = Document(doc_path_selected)
-                # 遍历文档中的所有段落，找到并删除对应的csem
                 for para in doc.paragraphs:
                     if timestamp_selected in para.text:
-                        # 找到对应的csem，将其删除
                         p = para._element
                         p.getparent().remove(p)
                 doc.save(doc_path_selected)
-                doc = Document(doc_path_selected)
-                # # 判断文档是否为空
-                # is_empty = all(not elem.text for elem in doc.element.body)
-                # # 如果文档为空，删除文档
-                # if is_empty:
-                #     os.remove(doc_path_selected)
                 with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                     data = json.load(file)
                 if data["csem"] == []:
@@ -687,19 +660,11 @@ class MetricsSelectionPage(tk.Frame):
                     # Delete from word
                     doc_path_selected_1 = f'{self.master.experiment_path_dynamic}/Metrics_Result/CSEM.docx'
                     doc_1 = Document(doc_path_selected_1)
-                    # 遍历文档中的所有段落，找到并删除对应的csem
                     for para in doc_1.paragraphs:
                         if timestamp_selected in para.text:
-                            # 找到对应的csem，将其删除
                             p = para._element
                             p.getparent().remove(p)
                     doc_1.save(doc_path_selected_1)
-                    doc_1 = Document(doc_path_selected_1)
-                    # # 判断文档是否为空
-                    # is_empty = all(not elem.text for elem in doc.element.body)
-                    # # 如果文档为空，删除文档
-                    # if is_empty:
-                    #     os.remove(doc_path_selected)
                     with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                         data = json.load(file)
                     if data["csem"] == []:
@@ -712,24 +677,13 @@ class MetricsSelectionPage(tk.Frame):
         total_frame = data["totalframe"]
         distance_list = data["distancelist"]
 
+
         def is_float(entry):
             try:
                 num1 = float(entry)
             except ValueError:
                 return False
             return True
-
-
-        # def is_integer(entry):
-        #     try:
-        #         num2 = int(entry)
-        #     except ValueError:
-        #         return False
-        #     return True
-
-
-        # def create_descending_list(n):
-        #     return list(range(n, 0, -1))
 
 
         def group_max(lst, group_size):
@@ -754,10 +708,6 @@ class MetricsSelectionPage(tk.Frame):
                     max_m_list.append(m)
                 elif Nm == 0:
                     break
-            # max_m_list = []
-            # for pair in m_Nm_list:
-            #     max_m_list.append(pair[0])
-            # max_m_list.sort()
             if max_m_list != []:
                 max_m_value = max_m_list[-1]
                 csem_value = max_m_value / (total_frame - 1)
@@ -774,18 +724,14 @@ class MetricsSelectionPage(tk.Frame):
                 with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                     json.dump(data, file, indent=4)
 
-                # 创建CSEM word文档并编辑写入新prox result
-                # Add annotation to Annotation file as .docx
                 frame_csem_docx_path = f'{self.master.experiment_path_dynamic}/Metrics_Result/CSEM.docx'
-                # os.path.exists()是Python中os模块的一个方法，用于检查指定的路径（文件或目录）是否存在。
-                # 如果路径存在，它会返回True；如果路径不存在，它会返回False。
                 if os.path.exists(frame_csem_docx_path):
                     doc = Document(frame_csem_docx_path)
                 else:
-                    doc = Document()  # 创建一个Document对象
+                    doc = Document()
                 doc.add_paragraph(
                     f'{timestamp}\n{csem_author}: \nδ = {threshold}\nmax(m) = {max_m_value}\nCSEM = {csem_value}\n--------------------------------------------------------------------------------------------------------------------')  # 在文档中添加一个段落
-                doc.save(frame_csem_docx_path)  # 将文档保存为一个.docx文件
+                doc.save(frame_csem_docx_path)
             else:
                 self.csem_tree.insert('', 'end', values=(csem_author, threshold, 0, 0, timestamp))
                 self.update_sort(self.csem_tree)
@@ -800,18 +746,14 @@ class MetricsSelectionPage(tk.Frame):
                 with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                     json.dump(data, file, indent=4)
 
-                # 创建CSEM word文档并编辑写入新csem result
-                # Add annotation to Annotation file as .docx
                 frame_csem_docx_path = f'{self.master.experiment_path_dynamic}/Metrics_Result/CSEM.docx'
-                # os.path.exists()是Python中os模块的一个方法，用于检查指定的路径（文件或目录）是否存在。
-                # 如果路径存在，它会返回True；如果路径不存在，它会返回False。
                 if os.path.exists(frame_csem_docx_path):
                     doc = Document(frame_csem_docx_path)
                 else:
-                    doc = Document()  # 创建一个Document对象
+                    doc = Document()
                 doc.add_paragraph(
                     f'{timestamp}\n{csem_author}: \nδ = {threshold}\nmax(m) = {0}\nCSEM = {0}\n--------------------------------------------------------------------------------------------------------------------')  # 在文档中添加一个段落
-                doc.save(frame_csem_docx_path)  # 将文档保存为一个.docx文件
+                doc.save(frame_csem_docx_path)
 
         else:
             messagebox.showwarning("Warning", "Please enter a valid threshold.")
@@ -837,7 +779,6 @@ class MetricsSelectionPage(tk.Frame):
             # Set the width for each frame
             frame_width = int((self.screen_width) * 3 / 8)
             frame_height = int(self.screen_height - 200)
-
 
             # Create left frame
             self.frame_left = tk.Frame(self.rv_di_cs_toplevel, width=frame_width - 20)
@@ -902,16 +843,16 @@ class MetricsSelectionPage(tk.Frame):
             # Show the legend
             self.rv_subplot.legend(frameon=True)
 
-            # 调整图表的边距：使用tight_layout()函数可以自动调整图表的大小以适应其内容。
-            # self.rv_latitude_graph.tight_layout() 应当在所有子图和标签绘制完成后，但在使用FigureCanvasTkAgg绘制图表之前调用。
-            # 这样的修改确保在图表被绘制到Tkinter界面之前，它已经被适当地调整了大小。
+            # Automatically adjust the size of the chart to fit its content
             self.rv_latitude_graph.tight_layout()
-            # 使用subplot_adjust:如果标题与图像顶部之间的空间太小，您可以调整子图的位置。
-            self.rv_latitude_graph.subplots_adjust(top=0.9)  # Adjust the top value accordingly
+            # If there is too little space between the title and
+            # the top of the image, adjust the position of the subplot.
+            # Adjust the top value accordingly
+            self.rv_latitude_graph.subplots_adjust(top=0.9)
 
-            # 绘制图表到Tkinter界面
+            # Plot the chart onto the Tkinter interface
             self.canvas_rv = FigureCanvasTkAgg(self.rv_latitude_graph,
-                                                 master=self.rv_latitude_graph_frame)  # A tk.DrawingArea.
+                                                 master=self.rv_latitude_graph_frame)
             self.canvas_rv.draw()
             self.canvas_rv.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
@@ -938,7 +879,7 @@ class MetricsSelectionPage(tk.Frame):
             self.rv_scatter_graph.subplots_adjust(top=0.9)
 
             self.canvas_rv_2 = FigureCanvasTkAgg(self.rv_scatter_graph,
-                                              master=self.rv_scatter_graph_frame)  # A tk.DrawingArea.
+                                              master=self.rv_scatter_graph_frame)
             self.canvas_rv_2.draw()
             self.canvas_rv_2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
@@ -968,68 +909,60 @@ class MetricsSelectionPage(tk.Frame):
             for coordinate_6 in object_2_coordinate:
                 object_2_lat_list.append(coordinate_6[1])
 
-            # 计算相关系数矩阵
+            # Calculate the correlation coefficient matrix
             pearson_coefficient_2_matrix = np.corrcoef(object_1_lat_list, object_2_lat_list)
-            # 提取相关系数
+            # Extract the correlation coefficient
             pearson_coefficient_2 = pearson_coefficient_2_matrix[0, 1]
 
             self.rv_Latitude_label = tk.Label(self.rv_result_label_frame, text=f"r_Latitude = {pearson_coefficient_2}")
             self.rv_Latitude_label.place(relx=0.5, rely=0.33, anchor='center')
 
-            speed_list_1 = []  # 第一个位置的速度为0
+            speed_list_1 = []
             for i in range(1, len(object_1_lat_list)):
-                # 速度是位置的变化除以时间的变化（在这里时间的变化总是1秒）
+                # Velocity is the change in position divided by the change in time (which is always 1 second here)
                 speed_1 = abs(object_1_lat_list[i] - object_1_lat_list[i - 1])
                 speed_list_1.append(speed_1)
             avg_speed_1 = np.mean(speed_list_1)
 
-            speed_list_2 = []  # 第一个位置的速度为0
+            speed_list_2 = []
             for j in range(1, len(object_2_lat_list)):
-                # 速度是位置的变化除以时间的变化（在这里时间的变化总是1秒）
                 speed_2 = abs(object_2_lat_list[j] - object_2_lat_list[j - 1])
                 speed_list_2.append(speed_2)
             avg_speed_2 = np.mean(speed_list_2)
 
-            # 分子部分：求和((x_i - mean_x) * (y_i - mean_y))的累加值
+            # The numerator part
             numerator_4 = sum(
                 (speed_list_1 - avg_speed_1) * (speed_list_2 - avg_speed_2))
-            # 分母部分：开方(求和((x_i - mean_x) ^ 2) * 求和((y_i - mean_y) ^ 2))
+            # The denominator part
             denominator_4 = np.sqrt(sum((speed_list_1 - avg_speed_1) ** 2) * sum(
                 (speed_list_2 - avg_speed_2) ** 2))
-            # 计算皮尔逊相关系数
+            # Calculate the Pearson correlation coefficient
             pearson_coefficient_4 = numerator_4 / denominator_4
 
             self.rv_speed_label = tk.Label(self.rv_result_label_frame, text=f"r_Speed = {pearson_coefficient_4}")
             self.rv_speed_label.place(relx=0.5, rely=0.66, anchor='center')
 
-
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                 data = json.load(file)
-                # 对数据进行更新
                 data['rv'] = [{
                     "r_Latitude": pearson_coefficient_2,
                     "r_Speed": pearson_coefficient_4
                 }]
-            # 将更新后的数据写回文件
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                 json.dump(data, file, indent=4)
 
-            # 写入word文档
             frame_rv_docx_path = f'{self.master.experiment_path_dynamic}/Metrics_Result/Correlation Coefficient.docx'
-            # os.path.exists()是Python中os模块的一个方法，用于检查指定的路径（文件或目录）是否存在。
-            # 如果路径存在，它会返回True；如果路径不存在，它会返回False。
             if os.path.exists(frame_rv_docx_path):
                 doc = Document(frame_rv_docx_path)
             else:
-                doc = Document()  # 创建一个Document对象
-            # 遍历文档中的所有段落，并删除
+                doc = Document()
             for element in doc.element.body:
                 doc.element.body.remove(element)
             doc.add_paragraph(
-                f'r_Latitude = {pearson_coefficient_2}\nr_Speed = {pearson_coefficient_4}')  # 在文档中添加一个段落
-            doc.save(frame_rv_docx_path)  # 将文档保存为一个.docx文件
+                f'r_Latitude = {pearson_coefficient_2}\nr_Speed = {pearson_coefficient_4}')
+            doc.save(frame_rv_docx_path)
 
-            # 创建中间frame
+            # Create the middle frame
             self.frame_middle = tk.Frame(self.rv_di_cs_toplevel, width=frame_width - 20)
             self.frame_middle.pack(side='left', fill='y')
 
@@ -1083,18 +1016,13 @@ class MetricsSelectionPage(tk.Frame):
             self.di_subplot.plot(self.object_2_index_list, self.object_2_displacement_list, color='b', label="object 2")
             self.di_subplot.set_xlabel("Frame")
             self.di_subplot.set_ylabel("Displacement Between Frames (pixel)")
-            self.di_subplot.legend(frameon=True)  # Show the legend
+            self.di_subplot.legend(frameon=True)
 
-            # 调整图表的边距：使用tight_layout()函数可以自动调整图表的大小以适应其内容。
-            # self.rv_latitude_graph.tight_layout() 应当在所有子图和标签绘制完成后，但在使用FigureCanvasTkAgg绘制图表之前调用。
-            # 这样的修改确保在图表被绘制到Tkinter界面之前，它已经被适当地调整了大小。
             self.di_displacement_graph.tight_layout()
-            # 使用subplot_adjust:如果标题与图像顶部之间的空间太小，您可以调整子图的位置。
-            self.di_displacement_graph.subplots_adjust(top=0.9)  # Adjust the top value accordingly
+            self.di_displacement_graph.subplots_adjust(top=0.9)
 
-            # 绘制图表到Tkinter界面
             self.canvas_di = FigureCanvasTkAgg(self.di_displacement_graph,
-                                               master=self.di_displacement_graph_frame)  # A tk.DrawingArea.
+                                               master=self.di_displacement_graph_frame)
             self.canvas_di.draw()
             self.canvas_di.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
@@ -1112,7 +1040,7 @@ class MetricsSelectionPage(tk.Frame):
                 figsize=(int(frame_width * 12 / 13) / 100, int(frame_height * 1 / 2) / 100), dpi=100)
             self.di_subplot_2 = self.di_angle_graph.add_subplot(111)
 
-            # 示例数列
+            # Example sequence
             object_1_displacement_neg_list = [object_1_position_list[i + 1] - object_1_position_list[i] for i in
                                               range(len(object_1_position_list) - 1)]
             object_2_displacement_neg_list = [object_2_position_list[i + 1] - object_2_position_list[i] for i in
@@ -1128,18 +1056,13 @@ class MetricsSelectionPage(tk.Frame):
             self.di_subplot_2.scatter(object_2_angle_frame_list, object_2_angle_list, s=5, color='b', label="object 2")
             self.di_subplot_2.set_xlabel("Frame")
             self.di_subplot_2.set_ylabel("Angle (degree)")
-            self.di_subplot_2.legend(frameon=True)  # Show the legend
+            self.di_subplot_2.legend(frameon=True)
 
-            # 调整图表的边距：使用tight_layout()函数可以自动调整图表的大小以适应其内容。
-            # self.rv_latitude_graph.tight_layout() 应当在所有子图和标签绘制完成后，但在使用FigureCanvasTkAgg绘制图表之前调用。
-            # 这样的修改确保在图表被绘制到Tkinter界面之前，它已经被适当地调整了大小。
             self.di_angle_graph.tight_layout()
-            # 使用subplot_adjust:如果标题与图像顶部之间的空间太小，您可以调整子图的位置。
-            self.di_angle_graph.subplots_adjust(top=0.9)  # Adjust the top value accordingly
+            self.di_angle_graph.subplots_adjust(top=0.9)
 
-            # 绘制图表到Tkinter界面
             self.canvas_di_2 = FigureCanvasTkAgg(self.di_angle_graph,
-                                               master=self.di_angle_graph_frame)  # A tk.DrawingArea.
+                                               master=self.di_angle_graph_frame)
             self.canvas_di_2.draw()
             self.canvas_di_2.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
@@ -1152,15 +1075,6 @@ class MetricsSelectionPage(tk.Frame):
             # di T value
             self.di_T_label = tk.Label(self.di_T_dis_theta_label_frame, text=f"T = {self.master.total_frame}")
             self.di_T_label.place(relx=0.5, rely=0.2, anchor='center')
-
-            # # di displacement variable
-            # self.di_dis_label_1 = tk.Label(self.di_T_dis_theta_label_frame, text="In the process of calculating DI_d and DI, ")
-            # self.di_dis_label_1.place(relx=0.5, rely=0.4, anchor='center')
-            #
-            # # di displacement variable
-            # self.di_dis_label_2 = tk.Label(self.di_T_dis_theta_label_frame,
-            #                                text="the situation where the denominator is 0 has been removed.")
-            # self.di_dis_label_2.place(relx=0.5, rely=0.6, anchor='center')
 
             # di angle variable
             self.di_angle_label = tk.Label(self.di_T_dis_theta_label_frame,
@@ -1180,7 +1094,8 @@ class MetricsSelectionPage(tk.Frame):
                         self.object_1_displacement_list[t] - self.object_2_displacement_list[t]) / denominator)
                 else:
                     total_sum_di_dis += 1
-            DI_d = total_sum_di_dis / T_variable if T_variable != 0 else 0  # 避免除以0
+            # Avoid division by 0
+            DI_d = total_sum_di_dis / T_variable if T_variable != 0 else 0
 
             self.di_displacement_label = tk.Label(self.di_result_label_frame, text=f"DI_d = {DI_d}")
             self.di_displacement_label.place(relx=0.5, rely=0.25, anchor='center')
@@ -1198,48 +1113,42 @@ class MetricsSelectionPage(tk.Frame):
 
             total_sum_di = 0
             for t in range(T_variable):
-                # 位移差的和
+                # Sum of displacement differences
                 displacement_sum = self.object_1_displacement_list[t] + self.object_2_displacement_list[t]
                 term1 = round(math.cos(math.radians(theta_diff_list[t])), 2)
-                # 排除除数为0的情况
+                # Exclude cases where the divisor is 0
                 if displacement_sum != 0:
                     term2 = 1 - (abs(
                         self.object_1_displacement_list[t] - self.object_2_displacement_list[t])) / displacement_sum
                 else:
                     term2 = 1
                 total_sum_di += term1 * term2
-
-            DI_com = total_sum_di / T_variable if T_variable != 0 else 0  # 避免除以0
+            # Avoid division by 0
+            DI_com = total_sum_di / T_variable if T_variable != 0 else 0
 
             self.di_com_label = tk.Label(self.di_result_label_frame, text=f"DI = {DI_com}")
             self.di_com_label.place(relx=0.5, rely=0.75, anchor='center')
 
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                 data = json.load(file)
-                # 对数据进行更新
                 data['di'] = [{
                     "DI_d": DI_d,
                     "DI_θ": DI_theta,
                     "DI": DI_com
                 }]
-                # 将更新后的数据写回文件
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                 json.dump(data, file, indent=4)
 
-            # 写入word文档
             frame_di_docx_path = f'{self.master.experiment_path_dynamic}/Metrics_Result/Dynamic Interaction.docx'
-            # os.path.exists()是Python中os模块的一个方法，用于检查指定的路径（文件或目录）是否存在。
-            # 如果路径存在，它会返回True；如果路径不存在，它会返回False。
             if os.path.exists(frame_di_docx_path):
                 doc = Document(frame_di_docx_path)
             else:
-                doc = Document()  # 创建一个Document对象
-            # 遍历文档中的所有段落，并删除
+                doc = Document()
             for element in doc.element.body:
                 doc.element.body.remove(element)
             doc.add_paragraph(
-                f'DI_d = {DI_d}\nDI_θ = {DI_theta}\nDI = {DI_com}')  # 在文档中添加一个段落
-            doc.save(frame_di_docx_path)  # 将文档保存为一个.docx文件
+                f'DI_d = {DI_d}\nDI_θ = {DI_theta}\nDI = {DI_com}')
+            doc.save(frame_di_docx_path)
 
             # Create right frame
             self.frame_right = tk.Frame(self.rv_di_cs_toplevel, width=int(frame_width * 2 / 3))
@@ -1287,32 +1196,25 @@ class MetricsSelectionPage(tk.Frame):
 
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'r') as file:
                 data = json.load(file)
-                # 对数据进行更新
                 data['cs'] = [{
                     "D_O": DO_value,
                     "D_E": DE_value,
                     "Cs": Cs_value
                 }]
-            # 将更新后的数据写回文件
             with open(f'{self.master.experiment_path_dynamic}/metadata.json', 'w') as file:
                 json.dump(data, file, indent=4)
 
-            # 写入word文档
             frame_cs_docx_path = f'{self.master.experiment_path_dynamic}/Metrics_Result/Cs.docx'
-            # os.path.exists()是Python中os模块的一个方法，用于检查指定的路径（文件或目录）是否存在。
-            # 如果路径存在，它会返回True；如果路径不存在，它会返回False。
             if os.path.exists(frame_cs_docx_path):
                 doc = Document(frame_cs_docx_path)
             else:
-                doc = Document()  # 创建一个Document对象
-            # 遍历文档中的所有段落，并删除
+                doc = Document()
             for element in doc.element.body:
                 doc.element.body.remove(element)
             doc.add_paragraph(
-                f'D_O = {DO_value}\nD_E = {DE_value}\nCs = {Cs_value}')  # 在文档中添加一个段落
-            doc.save(frame_cs_docx_path)  # 将文档保存为一个.docx文件
+                f'D_O = {DO_value}\nD_E = {DE_value}\nCs = {Cs_value}')
+            doc.save(frame_cs_docx_path)
 
-            # after() will call move_scrollbar_to_top() after 100ms
             def move_scrollbar_to_top():
                 self.rv_canvas.yview_moveto(0)
                 self.di_canvas.yview_moveto(0)
@@ -1333,11 +1235,8 @@ class MetricsSelectionPage(tk.Frame):
                 self.di_annotation_2.remove()
 
             self.di_line = self.di_subplot.axvline(x=x_value, color='g')
-
             y_value_1 = np.interp(x_value, self.object_1_index_list, self.object_1_displacement_list)
             y_value_2 = np.interp(x_value, self.object_2_index_list, self.object_2_displacement_list)
-
-            # 显示坐标
             self.di_annotation_1 = self.di_subplot.annotate(f'({x_value:.2f}, {y_value_1:.2f})', xy=(x_value, y_value_1),
                                                           xytext=(x_value, y_value_1))
             self.di_annotation_2 = self.di_subplot.annotate(f'({x_value:.2f}, {y_value_2:.2f})', xy=(x_value, y_value_2),
@@ -1368,7 +1267,6 @@ class MetricsSelectionPage(tk.Frame):
 
 
     def draw_line_rv(self, event):
-        # 检查了鼠标点击事件是否在图像的坐标轴内
         if event.inaxes is not None:
             x_value = event.xdata
             if self.rv_line in self.rv_subplot.lines:
@@ -1379,16 +1277,12 @@ class MetricsSelectionPage(tk.Frame):
                 self.rv_annotation_2.remove()
 
             self.rv_line = self.rv_subplot.axvline(x=x_value, color='g')
-
             y_value_1 = np.interp(x_value, self.object_1_x_cor, self.object_1_y_cor)
             y_value_2 = np.interp(x_value, self.object_2_x_cor, self.object_2_y_cor)
-
-            # 显示坐标
             self.rv_annotation_1 = self.rv_subplot.annotate(f'({x_value:.2f}, {y_value_1:.2f})', xy=(x_value, y_value_1),
                                                           xytext=(x_value, y_value_1))
             self.rv_annotation_2 = self.rv_subplot.annotate(f'({x_value:.2f}, {y_value_2:.2f})', xy=(x_value, y_value_2),
                                                           xytext=(x_value, y_value_2))
-
             self.canvas_rv.draw()
 
 
