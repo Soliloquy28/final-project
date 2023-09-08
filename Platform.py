@@ -44,6 +44,9 @@ class Platform(tk.Tk):
         from TrackingSelectionPage import TrackingSelectionPage
 
         # Switch between different page frames
+        # The code from `self.frames = {}` to `frame.tkraise()` is not an original work
+        # by the developer but rather comes from the following webpage.
+        # https://www.javatpoint.com/tkinter-application-to-switch-between-different-page-frames-in-python
         self.frames = {}
         for F in (LoginPage, ModePage, UploadPage, ContinuePage, ExperimentPage,
                   ProcessingPage, MetricsSelectionPage, TrackingSelectionPage):

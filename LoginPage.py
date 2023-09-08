@@ -8,7 +8,7 @@ import Global
 class LoginPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master, width=700, height=500)
-        photo_ucl = Global.photo_place("ucl_logo.png", 150, 60)
+        photo_ucl = Global.photo_place("Graphs/ucl_logo.png", 150, 60)
         self.image_label_ucl = tk.Label(self, image=photo_ucl)
         self.image_label_ucl.image = photo_ucl
         self.image_label_ucl.place(relx=0.5, rely=0.1, anchor="n")

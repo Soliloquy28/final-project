@@ -111,6 +111,9 @@ class TrackingSelectionPage(tk.Frame):
             return [sorted_points[i] for i in [2, 1, 0, 3]]
 
         def capture_event(event, x, y, flags, params):
+            # The code from `if event == cv.EVENT_LBUTTONDOWN:` to `cv.namedWindow("Perspective", cv.WINDOW_AUTOSIZE)`
+            # is not an original work by the developer but rather comes from the following webpage.
+            # https://blog.csdn.net/w666665/article/details/117450261
             if event == cv.EVENT_LBUTTONDOWN:
                 cv.circle(frame, (x, y), 10, (0, 0, 255), -1)
                 cv.imshow("Source Video", frame)

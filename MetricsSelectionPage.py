@@ -89,7 +89,7 @@ class MetricsSelectionPage(tk.Frame):
             self.pro_label_image_frame.pack()
             self.pro_label = tk.Label(self.pro_label_image_frame, text="Proximity index (Prox)")
             self.pro_label.place(relx=0.5, rely=0.15, anchor="center")
-            photo_1 = Global.photo_place("amProx.png", int(frame_width * 4.3 / 10), int(frame_width * 4.3 / 20))
+            photo_1 = Global.photo_place("Graphs/amProx.png", int(frame_width * 4.3 / 10), int(frame_width * 4.3 / 20))
             self.image_label_1 = tk.Label(self.pro_label_image_frame, image=photo_1)
             # Maintain a reference to the image
             self.image_label_1.image = photo_1
@@ -199,7 +199,7 @@ class MetricsSelectionPage(tk.Frame):
             self.csem_label_image_frame.pack()
             self.csem_label = tk.Label(self.csem_label_image_frame, text="Standardized cross sampled entropy (CSEM)")
             self.csem_label.place(relx=0.5, rely=0.15, anchor='center')
-            photo_2 = Global.photo_place("amCSEM.png", int(frame_width * 6.3 / 10), int(frame_width * 6.3 / 20))
+            photo_2 = Global.photo_place("Graphs/amCSEM.png", int(frame_width * 6.3 / 10), int(frame_width * 6.3 / 20))
             self.image_label_2 = tk.Label(self.csem_label_image_frame, image=photo_2)
             self.image_label_2.image = photo_2
             self.image_label_2.place(relx=0.5, rely=0.35, anchor='n')
@@ -311,7 +311,7 @@ class MetricsSelectionPage(tk.Frame):
             self.frame_3.pack(side='left', fill='both', expand=True)
             self.cs_label = tk.Label(self.frame_3, text="Coefficient of Sociality (Cs)")
             self.cs_label.place(relx=0.5, rely=0.05, anchor='center')
-            photo_3 = Global.photo_place("amCs.png", int(frame_width / 2), int(frame_width / 3))
+            photo_3 = Global.photo_place("Graphs/amCs.png", int(frame_width / 2), int(frame_width / 3))
             self.image_label_3 = tk.Label(self.frame_3, image=photo_3)
             self.image_label_3.image = photo_3
             self.image_label_3.place(relx=0.5, rely=0.1, anchor='n')
@@ -803,7 +803,7 @@ class MetricsSelectionPage(tk.Frame):
             self.correlation_coefficient_label = tk.Label(self.rv_label_image_frame, text="Correlation Coefficient")
             self.correlation_coefficient_label.place(relx=0.5, rely=0.15, anchor="center")
 
-            photo_rv = Global.photo_place("amrv.png", int((frame_width - 20) * 7 / 10), int((frame_width - 20) * 7 / 20))
+            photo_rv = Global.photo_place("Graphs/amrv.png", int((frame_width - 20) * 7 / 10), int((frame_width - 20) * 7 / 20))
             self.image_label_rv = tk.Label(self.rv_label_image_frame, image=photo_rv)
             self.image_label_rv.image = photo_rv
             self.image_label_rv.place(relx=0.5, rely=0.35, anchor="n")
@@ -985,7 +985,7 @@ class MetricsSelectionPage(tk.Frame):
             self.dynamic_interaction_label = tk.Label(self.di_label_image_frame, text="Dynamic Interaction Index")
             self.dynamic_interaction_label.place(relx=0.5, rely=0.1, anchor="center")
 
-            photo_di = Global.photo_place("amDI.png", int((frame_width - 20) * 9 / 10), int((frame_width - 20) * 9 / 20))
+            photo_di = Global.photo_place("Graphs/amDI.png", int((frame_width - 20) * 9 / 10), int((frame_width - 20) * 9 / 20))
             self.image_label_di = tk.Label(self.di_label_image_frame, image=photo_di)
             self.image_label_di.image = photo_di
             self.image_label_di.place(relx=0.5, rely=0.2, anchor="n")
@@ -1157,7 +1157,7 @@ class MetricsSelectionPage(tk.Frame):
             self.cs_label_2 = tk.Label(self.frame_right, text="Coefficient of Sociality (Cs)")
             self.cs_label_2.place(relx=0.5, rely=0.05, anchor='center')
 
-            photo_right = Global.photo_place("amCs.png", int(frame_width / 2), int(frame_width / 3))
+            photo_right = Global.photo_place("Graphs/amCs.png", int(frame_width / 2), int(frame_width / 3))
             self.image_label_right = tk.Label(self.frame_right, image=photo_right)
             self.image_label_right.image = photo_right
             self.image_label_right.place(relx=0.5, rely=0.1, anchor='n')
