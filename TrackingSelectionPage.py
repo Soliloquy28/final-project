@@ -383,7 +383,7 @@ class TrackingSelectionPage(tk.Frame):
         while cap.isOpened():
             success, frame = cap.read()
             if success:
-                dst = rd.getPerspectiveImage(frame)
+                dst = rd.get_perspective_image(frame)
                 dst = cv.GaussianBlur(dst, (3, 3), 0)
                 alpha = 1  # Contrast control (1.0-3.0)
                 beta = 0  # Brightness control (0-100)
