@@ -47,8 +47,6 @@ class ExperimentPage(tk.Frame):
 
         self.master.protocol("WM_DELETE_WINDOW", self.quit)
 
-        print(type(self.tree_frame))
-        print(type(self.tree))
 
     def delete_selected_experiment(self):
         selected_item = self.tree.selection()

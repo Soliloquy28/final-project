@@ -23,8 +23,6 @@ class ModePage(tk.Frame):
 
         self.master.protocol("WM_DELETE_WINDOW", self.quit)
 
-        print(type(self.welcome_label))
-        print(type(self.new_button))
 
     def go_to_upload_page(self):
         from UploadPage import UploadPage

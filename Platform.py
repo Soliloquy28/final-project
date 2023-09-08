@@ -8,6 +8,7 @@ class Platform(tk.Tk):
         super().__init__()
 
         self.resizable(False, False)
+        self.title('Video Processing Platform')
 
         # Some global variables
         self.username = tk.StringVar()
