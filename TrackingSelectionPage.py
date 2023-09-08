@@ -355,7 +355,7 @@ class TrackingSelectionPage(tk.Frame):
         rd = RailDetector(20, 60, 100, Global.blob_size, Global.blob_border_size)
 
         # Persist in detecting two targets
-        bboxes, img = rd.keepDetect(f'{source_video_path}/{video_name}', 2)
+        bboxes, img = rd.keep_detect(f'{source_video_path}/{video_name}', 2)
 
         # Specify the tracker type
         trackerType = "CSRT"
