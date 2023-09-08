@@ -11,8 +11,6 @@ img = ImageGrab.grab()
 screen_width = img.size[0]
 screen_height = img.size[1]
 
-# Windows: [1920, 1080]
-# Macbook: [3024, 1964] [1512, 982]
 # Perspective transformation image size (pixels) [Track width, Track length]
 blob_size = [450, 1500]
 # Actual size (cm) [Track width, Track length]
