@@ -43,10 +43,8 @@ class MetricsSelectionPage(tk.Frame):
                 data = json.load(file)
             tracking_method = data['trackingmethod']
             video_path = data["processedvideo"]
-            # distance_list = data["distancelist"]
             object_1_coordinate = data['object1coordinatelist']
             object_2_coordinate = data['object2coordinatelist']
-            # distance_list.sort()
             min_distance = min(data["distancelist"])
             max_distance = max(data["distancelist"])
             if tracking_method == "Multiple object tracking":
