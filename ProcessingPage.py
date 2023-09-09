@@ -929,14 +929,44 @@ class ProcessingPage(tk.Frame):
             # Set slider position based on selected frame
             self.slider_1.set(frame)
             x = frame
-            if self.line_1:
+            if self.line_1 in self.subplot_1.lines:
                 self.line_1.remove()
-            if self.line_2:
+            if self.line_2 in self.subplot_2.lines:
                 self.line_2.remove()
+            if self.annotation_1_1 in self.subplot_1.texts:
+                self.annotation_1_1.remove()
+            if self.annotation_2_1 in self.subplot_1.texts:
+                self.annotation_2_1.remove()
+            if self.annotation_1_2 in self.subplot_2.texts:
+                self.annotation_1_2.remove()
+            if self.annotation_2_2 in self.subplot_2.texts:
+                self.annotation_2_2.remove()
+
             self.line_1 = self.subplot_1.axvline(x=x, color='g')
             self.line_2 = self.subplot_2.axvline(x=x, color='g')
+
+            y_interp_1_1 = np.interp(x, self.x_cor_1, self.y_cor_1_1)
+            y_interp_2_1 = np.interp(x, self.x_cor_1, self.y_cor_2_1)
+            y_interp_1_2 = np.interp(x, self.x_cor_2, self.y_cor_1_2)
+            y_interp_2_2 = np.interp(x, self.x_cor_2, self.y_cor_2_2)
+
+            self.annotation_1_1 = self.subplot_1.annotate(f'({x:.2f}, {y_interp_1_1:.2f})', xy=(x, y_interp_1_1),
+                                                          xytext=(x, y_interp_1_1))
+            self.annotation_2_1 = self.subplot_1.annotate(f'({x:.2f}, {y_interp_2_1:.2f})', xy=(x, y_interp_2_1),
+                                                          xytext=(x, y_interp_2_1))
+            self.annotation_1_2 = self.subplot_2.annotate(f'({x:.2f}, {y_interp_1_1:.2f})', xy=(x, y_interp_1_2),
+                                                          xytext=(x, y_interp_1_2))
+            self.annotation_2_2 = self.subplot_2.annotate(f'({x:.2f}, {y_interp_2_1:.2f})', xy=(x, y_interp_2_2),
+                                                          xytext=(x, y_interp_2_2))
+
             self.canvas_1.draw()
             self.canvas_2.draw()
+
+            frame = int(x)
+            # Clear existing content
+            self.frame_entry.delete(0, tk.END)
+            # Insert new content
+            self.frame_entry.insert(0, f'{frame}')
 
 
     def slider_moved_1(self, event):
