@@ -25,7 +25,7 @@ class UploadPage(tk.Frame):
         self.upload_tree_frame = tk.Frame(self)  # Create a frame for the Treeview and Scrollbar
         self.upload_tree_frame.place(relx=0.5, rely=0.5, anchor='center')
 
-        self.upload_tree = ttk.Treeview(self.upload_tree_frame, columns=("c1", "c2", "c3", "c4"), show='headings',
+        self.upload_tree = ttk.Treeview(self.upload_tree_frame, columns=("c1", "c2", "c3"), show='headings',
                                  selectmode="extended", height=11)
         self.upload_tree.column("c1", anchor=tk.CENTER, width=100)
         self.upload_tree.heading("c1", text="Experiment", command=lambda _col="c1": self.sortby(_col, 0))
@@ -33,8 +33,6 @@ class UploadPage(tk.Frame):
         self.upload_tree.heading("c2", text="Video Name", command=lambda _col="c2": self.sortby(_col, 0))
         self.upload_tree.column("c3", anchor=tk.CENTER, width=150)
         self.upload_tree.heading("c3", text="Time Created", command=lambda _col="c3": self.sortby(_col, 0))
-        self.upload_tree.column("c4", width=0, minwidth=0, stretch='no')
-        self.upload_tree.heading("c4", text="Author", command=lambda _col="c4": self.sortby(_col, 0))
 
         self.upload_tree.pack(side=tk.LEFT)
         # Create a vertical scrollbar
@@ -116,7 +114,6 @@ class UploadPage(tk.Frame):
             self.master.selected_new = self.upload_tree.set(selected_item, "c1")
             self.master.basement_name_dynamic = self.upload_tree.set(selected_item, "c2")
             self.master.experiment_path_dynamic = f'{self.master.repository_path_dynamic}/{self.master.selected_new}'
-            self.experiment_path = f'{self.master.repository_path_dynamic}/{self.master.selected_new}'
             self.master.processed_video_path_dynamic = f'{self.master.experiment_path_dynamic}/Processed_Video'
             self.master.show_frame(ProcessingPage)
             self.update_sort()
@@ -161,8 +158,7 @@ class UploadPage(tk.Frame):
                     video_name = data["videoname"]
                     time_created = data["timecreate"]
                     status = data["status"]
-                    author = data["author"]
-                    metadata_list = [experiment, video_name, time_created, status, author]
+                    metadata_list = [experiment, video_name, time_created, status]
                     self.upload_tree.insert('', 'end', values=metadata_list)
         else:
             messagebox.showwarning("Warning", "Please delete the uploaded file first.")
@@ -205,13 +201,12 @@ class UploadPage(tk.Frame):
                     self.upload_tree.delete(item_id)
                     self.update_sort()
                 # Reset file path label and stored file path
-                if not self.upload_tree.get_children():
-                    self.experiment_path = ""
-                    self.master.selected_file_path = ""
-                    self.master.repository_path_dynamic = ""
-                    self.master.experiment_path_dynamic = ""
-                    self.master.source_video_path_dynamic = ""
-                    self.master.processed_video_path_dynamic = ""
+                self.experiment_path = ""
+                self.master.selected_file_path = ""
+                self.master.repository_path_dynamic = ""
+                self.master.experiment_path_dynamic = ""
+                self.master.source_video_path_dynamic = ""
+                self.master.processed_video_path_dynamic = ""
         else:
             messagebox.showwarning("Warning", "Please select at least one experiment.")
 
@@ -276,15 +271,3 @@ class UploadPage(tk.Frame):
     def back_to_mode_page(self):
         from ModePage import ModePage
         self.master.show_frame(ModePage)
-
-
-    def update_upload_treeview(self):
-        full_name = self.master.username.get().strip()
-        if self.upload_tree.get_children():
-            with open(f'{self.experiment_path}/metadata.json', 'r') as file:
-                data = json.load(file)
-            author = data["author"]
-            if full_name != author:
-                for row in self.upload_tree.get_children():
-                    self.upload_tree.delete(row)
-            self.update_sort()

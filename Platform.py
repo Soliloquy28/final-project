@@ -60,15 +60,12 @@ class Platform(tk.Tk):
     # Page frame updates once shift
     def show_frame(self, page):
         from ModePage import ModePage
-        from UploadPage import UploadPage
         from ContinuePage import ContinuePage
         from ExperimentPage import ExperimentPage
         from ProcessingPage import ProcessingPage
         frame = self.frames[page]
         if page == ModePage:
             frame.update_username()
-        if page == UploadPage:
-            frame.update_upload_treeview()
         if page == ContinuePage:
             frame.update_available()
         if page == ExperimentPage:
