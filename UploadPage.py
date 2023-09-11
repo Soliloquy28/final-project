@@ -116,6 +116,7 @@ class UploadPage(tk.Frame):
             self.master.selected_new = self.upload_tree.set(selected_item, "c1")
             self.master.basement_name_dynamic = self.upload_tree.set(selected_item, "c2")
             self.master.experiment_path_dynamic = f'{self.master.repository_path_dynamic}/{self.master.selected_new}'
+            self.experiment_path = f'{self.master.repository_path_dynamic}/{self.master.selected_new}'
             self.master.processed_video_path_dynamic = f'{self.master.experiment_path_dynamic}/Processed_Video'
             self.master.show_frame(ProcessingPage)
             self.update_sort()
